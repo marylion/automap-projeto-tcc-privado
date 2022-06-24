@@ -25,7 +25,7 @@ __subversion__ = '16.53'
 
 # Primeiramente, importar ARCPY.
 print("Importando Arcpy...")
-import arcpy
+# import arcpy
 print("Importando outras bibliotecas...")
 
 # Pythons 2.7 tweaks
@@ -53,11 +53,6 @@ import json
 import time
 import base64
 import fnmatch
-
-
-# Importante para configurar corretamente o Icone.
-myappid = 'AutoMap {}-{}.{}'.format(__version__, __stage__, __subversion__)
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 
 # Carregar Constantes, funções e projeto
@@ -589,13 +584,19 @@ def area_limitacao(camada_a_ser_bufada, data_frame_to_add, arquivo_mxd, distanci
 
 # Dados Gerais
 class Model:
+    rotulos = ["Ano","Número","Situaççao","Interessado",
+        "Denominação","Município","Carta","Zoneamento",
+        ]
+
+    # Importante para configurar corretamente o Icone.
+    myappid = 'Ocorrencias Maker {}-{}.{}'.format(__version__, __stage__, __subversion__)
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
 
     # User Related
     nome_diretorio = os.path.dirname(__file__).replace('/','\\')
     nome_usuario =getpass.getuser()
     caminho_projeto_mxd_legenda = ''
-
-
 
     # Tela
     largura = 1270
@@ -605,57 +606,30 @@ class Model:
     posicao_x = screen_largura//2 - largura//2
     posicao_y = screen_altura//2 - altura//2 
     
+    # Informações
+    comprimento_entry_informacoes = 70
+
+    # 
+    sequencia_de_linhas_entry_informacoes = range(1,10)
+
+
+
 
 
 class TkView:
-
-
-    camadas_legenda = {}
-    estado_do_botao_do_dropdown = ' *.txt'
-    arquivo = None
-
-    rotulos = [
-        "Ano",
-        "Número",
-        "Situacao",
-        "Interessado",
-        "Denominacao",
-        "Municipio",
-        "Carta",
-        "Zoneamento",
-        ]
-
-    comprimento = 30
-    
-    comprimeiro_entry = 70
-    comprimeiro_entry_wob = 70 - 14
-    rb_gms = None
-    rb_gd = None
-    rb_utm = None
-    epsg_Entry = None
-
-    pos_info = 1
-    pos_titles = 0
-
-    pos_saves = pos_info+9
-
-    r_ano, r_num, r_sit, r_int, r_den, r_mun, r_car, r_zon, r_viz = range(1,10)
-
-
 
     def setup(self):
 
         """Setup inicial do Programa."""
 
-        # Iniciar o principal
-        l = self.model.largura
-        a = self.model.altura
-        x = self.model.posicao_x
-        y = self.model.posicao_y
-
         self.root = tkinter.Tk() # Raiz
-        self.root.title(myappid) # Título
-        self.root.geometry('{}x{}+{}+{}'.format(l, a, x, y))  
+        self.root.title(self.model.myappid) # Título
+        self.root.geometry('{}x{}+{}+{}'.format(
+            self.model.largura,
+            self.model.altura,
+            self.model.posicao_x,
+            self.model.posicao_y,
+            ))  
         
         # Carrega o Icone, que é gerado pelo instalador
         self.root.iconbitmap('{}\\{}'.format(self.model.nome_diretorio, 'automap.ico'))
@@ -763,7 +737,7 @@ class TkView:
         
         """Mostra uma caixa na tela para vizualizar as informações e ainda salva num txt."""
 
-        rotulos = ["Ano", "Número", "Situação", "Interessado", "Denominação", "Município", "Carta", "Zoneamento"]
+        self.model.rotulos = ["Ano", "Número", "Situação", "Interessado", "Denominação", "Município", "Carta", "Zoneamento"]
         texto = []
         pasta_automap = "C:\\Users\\{}\\Documents\\AutoMap".format(self.model.nome_usuario)
 
@@ -977,15 +951,15 @@ class TkView:
         self.theme_frame_caminhos = ttk.LabelFrame(self.theme_frame_informacoes, text='')
 
         self.theme_frame_log = ttk.LabelFrame(self.theme_frame_caminhos, text='LOG')
-        self.log_text_Label = ttk.Label(self.theme_frame_log, text=self.log_text, justify='left',width=self.comprimeiro_entry-15)
+        self.log_text_Label = ttk.Label(self.theme_frame_log, text=self.log_text, justify='left',width=self.model.comprimento_entry_informacoes-15)
         self.log_text_Label['text'] = '\tAguardando entradas do usuário...'
 
 
         # GRUPO INFORAMÕES : LINHAS 11 ATÉ 17-18
         self.caminho_projeto_mxd_Label = ttk.Label(self.theme_frame_caminhos, text=" Projeto .mxd ")
         self.caminho_para_salvar_Label = ttk.Label(self.theme_frame_caminhos, text=" Exportar Mapa")
-        self.caminho_projeto_mxd_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.comprimeiro_entry_wob, textvariable=self.caminho_mxd_,)
-        self.caminho_para_salvar_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.comprimeiro_entry_wob, textvariable=self.caminho_para_salvar_,)
+        self.caminho_projeto_mxd_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.model.comprimento_entry_informacoes, textvariable=self.caminho_mxd_,)
+        self.caminho_para_salvar_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.model.comprimento_entry_informacoes, textvariable=self.caminho_para_salvar_,)
         
         self.sb1 = partial(self.control.func_selecionar_arquivo_projeto_mxd, self.caminho_projeto_mxd_Entry)
         self.caminho_projeto_mxd_Button = ttk.Button(self.theme_frame_caminhos, text='Selecionar', command=self.sb1)
@@ -1015,7 +989,7 @@ class TkView:
             command=self.func_dropdown_mudou
             )
         #
-        self.caminho_arquivo_shp_ou_txt_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.comprimeiro_entry_wob, textvariable=self.caminho_arquivo_shp_ou_txt,)
+        self.caminho_arquivo_shp_ou_txt_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.model.comprimento_entry_informacoes, textvariable=self.caminho_arquivo_shp_ou_txt,)
 
         #### BOTÃO DE EXPORTAR MAPA #####
 
@@ -1097,11 +1071,11 @@ class TkView:
 
 
         self.caminho_projeto_mxd_Label = ttk.Label(self.theme_frame_caminhos, text=" Projeto .mxd ")
-        self.caminho_projeto_mxd_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.comprimeiro_entry_wob, textvariable=self.caminho_mxd_,)
+        self.caminho_projeto_mxd_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.model.comprimento_entry_informacoes, textvariable=self.caminho_mxd_,)
         self.sb1 = partial(self.control.func_selecionar_arquivo_projeto_mxd, self.caminho_projeto_mxd_Entry)
         self.caminho_projeto_mxd_Button = ttk.Button(self.theme_frame_caminhos, text='Selecionar', command=self.sb1)
         self.caminho_para_salvar_Label = ttk.Label(self.theme_frame_caminhos, text=" Exportar Mapa")
-        self.caminho_para_salvar_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.comprimeiro_entry_wob, textvariable=self.caminho_para_salvar_,)
+        self.caminho_para_salvar_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.model.comprimento_entry_informacoes, textvariable=self.caminho_para_salvar_,)
         self.sb2 = partial(self.control.func_selecionar_diretorio_exportar_produtos, self.caminho_para_salvar_Entry)
         self.open_button_2 = ttk.Button(self.theme_frame_caminhos, text='Selecionar', command=self.sb2)
 
@@ -1116,7 +1090,7 @@ class TkView:
         # self.variable.trace('w',self.func_variavel_dropdown)
         # self.variable.set(self.list_dropdown_options[1])
         # self.dropdown = ttk.OptionMenu(self.theme_frame_caminhos, self.variable, self.list_dropdown_options[1],*self.list_dropdown_options, command=self.func_dropdown_mudou)
-        # self.caminho_arquivo_shp_ou_txt_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.comprimeiro_entry_wob, textvariable=self.caminho_arquivo_shp_ou_txt,)
+        # self.caminho_arquivo_shp_ou_txt_Entry = ttk.Entry(self.theme_frame_caminhos, width=self.model.comprimento_entry_informacoes, textvariable=self.caminho_arquivo_shp_ou_txt,)
 
         #### BUTTAO DE EXPORTAR MAPA #####
         self.exportar_mapa_button = ttk.Button(self.theme_frame_caminhos, text=" Exportar Mapa ", command=self.partial_exportar_mapa2)
@@ -1141,7 +1115,7 @@ class TkView:
         self.objeto_canvas.create_image(0, 0, anchor='nw', image=self.imagem_de_previzualizacao)
         
         # BOTÃO FINAL
-        self.pre_vizualizacao_botao_atualizar = ttk.Button(self.theme_frame_pre_vizualizacao, command=self.control.func_botao_atualizar_preview, text=self.texto_pre_vizualizacao, width=self.comprimeiro_entry-5)
+        self.pre_vizualizacao_botao_atualizar = ttk.Button(self.theme_frame_pre_vizualizacao, command=self.control.func_botao_atualizar_preview, text=self.texto_pre_vizualizacao, width=self.model.comprimento_entry_informacoes-5)
 
         # GRIDS
         self.theme_frame_pre_vizualizacao.grid(row=0,column=1, padx=5, pady=5, ipadx=0, ipady=0, sticky='nw')
@@ -1161,7 +1135,7 @@ class TkView:
                                                 self.municipio_,self.carta_,
                                                 self.zoneamento_,None)
 
-        self.exportar_mapa_button = ttk.Button(self.theme_frame_pre_vizualizacao, text=" Exportar Mapa ", command=self.partial_exportar_mapa2, width=self.comprimeiro_entry-5)
+        self.exportar_mapa_button = ttk.Button(self.theme_frame_pre_vizualizacao, text=" Exportar Mapa ", command=self.partial_exportar_mapa2, width=self.model.comprimento_entry_informacoes-5)
         
         self.pre_vizualizacao_botao_atualizar.grid(row=2)
         self.exportar_mapa_button.grid(row=3)
@@ -1190,29 +1164,29 @@ class TkView:
         self.epsg_ = tkinter.StringVar()
 
         # ANO
-        self.ano_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[0], justify='left')
-        self.ano_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.ano_,  )
+        self.ano_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[0], justify='left')
+        self.ano_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.ano_,  )
         # NUMERO
-        self.numero_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[1], justify='left') 
-        self.numero_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.numero_,  )
+        self.numero_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[1], justify='left') 
+        self.numero_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.numero_,  )
         # SITUACAO
-        self.situacao_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[2], justify='left')
-        self.situacao_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.situacao_,  )
+        self.situacao_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[2], justify='left')
+        self.situacao_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.situacao_,  )
         # INTERESSADO
-        self.interessado_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[3], justify='left') 
-        self.interessado_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.interessado_,  )
+        self.interessado_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[3], justify='left') 
+        self.interessado_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.interessado_,  )
         # DENOMINACAO
-        self.denominacao_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[4], justify='left')
-        self.denominacao_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.denominacao_,  )
+        self.denominacao_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[4], justify='left')
+        self.denominacao_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.denominacao_,  )
         # Muni_upCIPIO
-        self.municipio_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[5], justify='left')
-        self.municipio_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.municipio_,  )
+        self.municipio_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[5], justify='left')
+        self.municipio_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.municipio_,  )
         # CARTA
-        self.carta_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[6], justify='left')
-        self.carta_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.carta_,  )
+        self.carta_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[6], justify='left')
+        self.carta_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.carta_,  )
         # ZONEAMENTO
-        self.zoneamento_Label = ttk.Label(self.theme_frame_informacoes, text=self.rotulos[7], justify='left')
-        self.zoneamento_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.comprimeiro_entry, textvariable=self.zoneamento_,  )
+        self.zoneamento_Label = ttk.Label(self.theme_frame_informacoes, text=self.model.rotulos[7], justify='left')
+        self.zoneamento_Entry = ttk.Entry(self.theme_frame_informacoes, width=self.model.comprimento_entry_informacoes, textvariable=self.zoneamento_,  )
         
         # BUTÃO VIZUALIZAR INFORMAÇÕES
         self.viz_data = partial(self.func_vizualizar_informacoes,
@@ -1227,32 +1201,32 @@ class TkView:
                                 self.municipio_,self.carta_,
                                 self.zoneamento_, None)
 
-        self.ano_Label.grid(             row=self.r_ano, column=0)  
-        self.ano_Entry.grid(             row=self.r_ano, column=1, padx=5, pady=5,  sticky='w') 
+        self.ano_Label.grid(             row=self.model.sequencia_de_linhas_entry_informacoes[0], column=0)  
+        self.ano_Entry.grid(             row=self.model.sequencia_de_linhas_entry_informacoes[0], column=1, padx=5, pady=5,  sticky='w') 
      
-        self.numero_Label.grid(          row=self.r_num, column=0)  
-        self.numero_Entry.grid(          row=self.r_num, column=1, padx=5, pady=5,  sticky='w') 
+        self.numero_Label.grid(          row=self.model.sequencia_de_linhas_entry_informacoes[1], column=0)  
+        self.numero_Entry.grid(          row=self.model.sequencia_de_linhas_entry_informacoes[1], column=1, padx=5, pady=5,  sticky='w') 
      
-        self.situacao_Label.grid(        row=self.r_sit, column=0)  
-        self.situacao_Entry.grid(        row=self.r_sit, column=1, padx=5, pady=5,  sticky='w')  
+        self.situacao_Label.grid(        row=self.model.sequencia_de_linhas_entry_informacoes[2], column=0)  
+        self.situacao_Entry.grid(        row=self.model.sequencia_de_linhas_entry_informacoes[2], column=1, padx=5, pady=5,  sticky='w')  
      
-        self.interessado_Label.grid(     row=self.r_int, column=0)  
-        self.interessado_Entry.grid(     row=self.r_int, column=1, padx=5, pady=5,  sticky='w')  
+        self.interessado_Label.grid(     row=self.model.sequencia_de_linhas_entry_informacoes[3], column=0)  
+        self.interessado_Entry.grid(     row=self.model.sequencia_de_linhas_entry_informacoes[3], column=1, padx=5, pady=5,  sticky='w')  
      
-        self.denominacao_Label.grid(     row=self.r_den, column=0)  
-        self.denominacao_Entry.grid(     row=self.r_den, column=1, padx=5, pady=5,  sticky='w')  
+        self.denominacao_Label.grid(     row=self.model.sequencia_de_linhas_entry_informacoes[4], column=0)  
+        self.denominacao_Entry.grid(     row=self.model.sequencia_de_linhas_entry_informacoes[4], column=1, padx=5, pady=5,  sticky='w')  
      
-        self.municipio_Label.grid(       row=self.r_mun, column=0)  
-        self.municipio_Entry.grid(       row=self.r_mun, column=1, padx=5, pady=5,  sticky='w')  
+        self.municipio_Label.grid(       row=self.model.sequencia_de_linhas_entry_informacoes[5], column=0)  
+        self.municipio_Entry.grid(       row=self.model.sequencia_de_linhas_entry_informacoes[5], column=1, padx=5, pady=5,  sticky='w')  
      
-        self.carta_Label.grid(           row=self.r_car, column=0)  
-        self.carta_Entry.grid(           row=self.r_car, column=1, padx=5, pady=5,  sticky='w')  
+        self.carta_Label.grid(           row=self.model.sequencia_de_linhas_entry_informacoes[6], column=0)  
+        self.carta_Entry.grid(           row=self.model.sequencia_de_linhas_entry_informacoes[6], column=1, padx=5, pady=5,  sticky='w')  
      
-        self.zoneamento_Label.grid(      row=self.r_zon, column=0)  
-        self.zoneamento_Entry.grid(      row=self.r_zon, column=1, padx=5, pady=5,  sticky='w')
+        self.zoneamento_Label.grid(      row=self.model.sequencia_de_linhas_entry_informacoes[7], column=0)  
+        self.zoneamento_Entry.grid(      row=self.model.sequencia_de_linhas_entry_informacoes[7], column=1, padx=5, pady=5,  sticky='w')
 
         self.viz_all_info_button = ttk.Button(self.theme_frame_informacoes, text="Vizualizar e Salvar Dados", command=self.viz_data2)
-        self.viz_all_info_button.grid(row=self.r_viz, column=0, columnspan=2,pady=5)
+        self.viz_all_info_button.grid(row=self.model.sequencia_de_linhas_entry_informacoes[8], column=0, columnspan=2,pady=5)
 
 
     def func_adicionar_frame_limites(self):
@@ -1962,11 +1936,6 @@ class Control:
         messagebox.messagebox.showinfo("Concluido", "Salvamento Concluído!")
         # open window on the current file
         subprocess.Popen('explorer /select, "{0}"'.format(novo_mxd.replace('/','\\').replace('c:\\','C:\\'),))
-
-
-
-
-
 
 if __name__ == "__main__":
     control = Control(Model(), TkView())
