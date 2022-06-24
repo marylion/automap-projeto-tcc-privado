@@ -25,7 +25,7 @@ __subversion__ = '16.53'
 
 # Primeiramente, importar ARCPY.
 print("Importando Arcpy...")
-import arcpy
+# import arcpy
 print("Importando outras bibliotecas...")
 
 # Pythons 2.7 tweaks
