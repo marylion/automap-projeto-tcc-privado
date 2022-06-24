@@ -323,6 +323,8 @@ class Constantes:
         'author':'Djalma Filho',
         }
 
+
+
 conts = Constantes()
 nm = conts.nomes_municipios
 src = conts.sistema_de_referencia_de_coordenadas
@@ -1010,24 +1012,7 @@ class TkView:
 
         # GRIDS
         #self.theme_frame_caminhos.grid(row=1,column=1,padx=10, pady=10, ipadx=5, ipady=0, sticky='ne')
-        self.theme_frame_caminhos.grid(row=0, columnspan=2)
-        self.theme_frame_log.grid(row=self.pos_saves+7, column=1)
-        self.log_text_Label.grid(pady=17)
-
-        self.caminho_projeto_mxd_Label.grid(         row=self.pos_saves+1, column=0)  
-        self.caminho_projeto_mxd_Entry.grid(         row=self.pos_saves+1, column=1, padx= 5, pady=5)
-        self.caminho_projeto_mxd_Button.grid(        row=self.pos_saves+1, column=2)
-
-        self.caminho_para_salvar_Label.grid(         row=self.pos_saves+2, column=0) 
-        self.caminho_para_salvar_Entry.grid(         row=self.pos_saves+2, column=1, padx= 5, pady=5)
-        self.open_button_2.grid(                     row=self.pos_saves+2, column=2)
-
-        self.ajuda_LabelFrame.grid(                  row=self.pos_saves+3, column=1, padx=10, pady=10, ipadx=5, ipady=0, sticky='w')
-        self.ajuda_Label.grid(                       row=1, column=1, padx=5, pady=5,  sticky='w')
-
-        self.dropdown.grid(                          row=self.pos_saves+4, column=0, pady=0)
-        self.caminho_arquivo_shp_ou_txt_Entry.grid(  row=self.pos_saves+4, column=1, pady=0)
-        # self.exportar_mapa_button.grid(              row=self.pos_saves+6, column=1, pady=20)
+        
 
 
 
@@ -1035,18 +1020,14 @@ class TkView:
         self.epsg_Entry = ttk.Entry(self.theme_frame_caminhos, width=6, textvariable=self.epsg_,)
 
 
-        self.epsg_Label.grid(     row=self.pos_saves+5, column=0)  
-        self.epsg_Entry.grid(     row=self.pos_saves+5, column=1, padx=5, pady=5,  sticky='w')  
 
         self.sb3 = partial(self.control.func_selecionar_arquivo, self.caminho_arquivo_shp_ou_txt_Entry)
         self.open_button_txt_shp = ttk.Button(self.theme_frame_caminhos, text='Selecionar', command=self.sb3)
-        self.open_button_txt_shp.grid(row=self.pos_saves+4,column=2)
 
 
 
 
         self.f1 = tkinter.Frame(self.theme_frame_caminhos)
-        self.f1.grid(row=self.pos_saves+5, column=1,sticky = 'e')
 
 
         self.rb_gms = ttk.Radiobutton(self.f1, text="Grau Minuto Segundo", value=1, var=self.opt)
@@ -1054,12 +1035,34 @@ class TkView:
         self.rb_utm = ttk.Radiobutton(self.f1, text="UTM", value=3, var=self.opt)
 
 
-        self.rb_gms.grid(row=0, column=2, sticky = 'e')
-        self.rb_gd.grid(row=0, column=3, sticky = 'e')
-        self.rb_utm.grid(row=0, column=4, sticky = 'e')
 
         # BOTAO DE TESTES RAPIDOS
         textos_radios = ["Nenhum valor selecionado","Grau Minuto Segundo","Grau Decimal","UTM"]
+        
+        self.rb_gms.grid(row=0, column=2, sticky = 'e')
+        self.rb_gd.grid(row=0, column=3, sticky = 'e')
+        self.rb_utm.grid(row=0, column=4, sticky = 'e')
+        self.theme_frame_caminhos.grid(row=0, columnspan=2)
+        self.ajuda_Label.grid(                       row=1, column=1, padx=5, pady=5,  sticky='w')
+        self.caminho_projeto_mxd_Label.grid(         row=10+1, column=0)  
+        self.caminho_projeto_mxd_Entry.grid(         row=10+1, column=1, padx= 5, pady=5)
+        self.caminho_projeto_mxd_Button.grid(        row=10+1, column=2)
+        self.caminho_para_salvar_Label.grid(         row=10+2, column=0) 
+        self.caminho_para_salvar_Entry.grid(         row=10+2, column=1, padx= 5, pady=5)
+        self.open_button_2.grid(                     row=10+2, column=2)
+        self.ajuda_LabelFrame.grid(                  row=10+3, column=1, padx=10, pady=10, ipadx=5, ipady=0, sticky='w')
+        self.dropdown.grid(                          row=10+4, column=0, pady=0)
+        self.caminho_arquivo_shp_ou_txt_Entry.grid(  row=10+4, column=1, pady=0)
+        self.open_button_txt_shp.grid(               row=10+4, column=2)
+        self.f1.grid(                                row=10+5, column=1,sticky = 'e')
+        self.epsg_Label.grid(                        row=10+5, column=0)  
+        self.epsg_Entry.grid(                        row=10+5, column=1, padx=5, pady=5,  sticky='w')  
+        self.exportar_mapa_button.grid(              row=10+6, column=1, pady=20)
+        self.theme_frame_log.grid(                   row=10+7, column=1)
+        self.log_text_Label.grid(                    pady=17  )
+
+        
+        
         def mostrar_teste(*args):
             opcao_do_radio = self.opt.get()
             print(opcao_do_radio)
@@ -1936,6 +1939,9 @@ class Control:
         messagebox.messagebox.showinfo("Concluido", "Salvamento Concluído!")
         # open window on the current file
         subprocess.Popen('explorer /select, "{0}"'.format(novo_mxd.replace('/','\\').replace('c:\\','C:\\'),))
+
+
+
 
 if __name__ == "__main__":
     control = Control(Model(), TkView())
