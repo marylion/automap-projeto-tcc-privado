@@ -6,26 +6,10 @@ __stage__ = 'BETA'
 __version__ = '6.14'
 __subversion__ = '16.53'
 
-# 1st and 2nd lines area special in python code
-# TODO Implementar limpar_tda()
-# TODO EPSG SER UM DROPDOWN COM AS OPÇÕES
-# TODO FAZER VÁRIOS PROJETOS SÓ PRA TROCAR O POSICIONAMENTO DO NOME
-# TODO FAZER VÁRIOS PROJETOS SÓ PRA MUDAR O TAMANHO DAS GRADES
-# TODO DROPDOWN COM VARIAS ESCALAS PRÉ-PRONTAS
-# TODO CHECKBOX + LABEL E ENTRY ESCALA PERSONALIZADA
-# TODO TROCAR DE PROJETO SE AS GRANDE FICAREM POPULOSAS DEMAIS
-# TODO SALVAR TODAS AS IMGS DE PRE-VIZUALIZACAO
 
 
-""" CONCLUIDOS """
-# ATIVAR / DESATIVAR: LIMITES, GLEBAS, ASSENTAMENTOS, ETC
-# MAKE SURE TO ADD BUFFER 300 TO AREA DE LIMITACAO
-# AJEITAR A OPTIONBOX DE .TXT E .SHP, ALGO DEU ERRADO
-
-
-# Primeiramente, importar ARCPY.
 print("Importando Arcpy...")
-# import arcpy
+# import arcpy # comentar poara velocidade
 print("Importando outras bibliotecas...")
 
 # Pythons 2.7 tweaks
@@ -57,49 +41,6 @@ import fnmatch
 
 # Carregar Constantes, funções e projeto
 print("Carregando Projeto...")
-
-
-# Agarrada na Tela, Classe e Funções complementares não fundamentais.
-class Grip:
-    """Faz com que a Janela fica Agaravel em qualquer lugar."""
-
-    def __init__ (self, parent, disable=None, releasecmd=None) :
-        self.parent = parent
-        self.root = parent.winfo_toplevel()
-
-        self.disable = disable
-        if type(disable) == 'str':
-            self.disable = disable.lower()
-
-        self.releaseCMD = releasecmd
-
-        self.parent.bind('<Button-1>', self.relative_position)
-        self.parent.bind('<ButtonRelease-1>', self.drag_unbind)
-
-    def relative_position (self, event) :
-        cx, cy = self.parent.winfo_pointerxy()
-        geo = self.root.geometry().split("+")
-        self.oriX, self.oriY = int(geo[1]), int(geo[2])
-        self.relX = cx - self.oriX
-        self.relY = cy - self.oriY
-
-        self.parent.bind('<Motion>', self.drag_wid)
-
-    def drag_wid (self, event) :
-        cx, cy = self.parent.winfo_pointerxy()
-        d = self.disable
-        x = cx - self.relX
-        y = cy - self.relY
-        if d == 'x' :
-            x = self.oriX
-        elif d == 'y' :
-            y = self.oriY
-        self.root.geometry('+%i+%i' % (x, y))
-
-    def drag_unbind (self, event) :
-        self.parent.unbind('<Motion>')
-        if self.releaseCMD != None :
-            self.releaseCMD()
 
 
 
@@ -252,7 +193,8 @@ class Constantes:
         'XINGUARA':'XINGUARA'
     }
 
-    WKID = sistema_de_referencia_de_coordenadas = {'GCS_SIRGAS_2000':4674,
+    WKID = sistema_de_referencia_de_coordenadas = {
+        'GCS_SIRGAS_2000':4674,
         'GCS_SIRGAS' 							:4170,
         'GCS_WGS_1984' 							:4326,
         'GCS_South_American_1969' 				:4618,
@@ -274,27 +216,29 @@ class Constantes:
     lDate = [ 'DATE' 		, 0, 0, 0 	]
     lDouble=[ 'DOUBLE' 	    , 0, 0, 0 	]
 
-    operacoes_da_tabela_de_atributos = {0:{'OBJECTID':lLong},
-        1 :{ 'id'			:lLong},
-        2 :{ 'interessad'	:lText},
-        3 :{ 'imovel'		:lText},
-        4 :{ 'ano'			:lLong},
-        5 :{ 'processo'		:lLong},
-        6 :{ 'municipio'	:lText},
-        7 :{ 'parcela'		:lText},
-        8 :{ 'situacao'		:lText},
-        9 :{ 'georref'		:lText},
-        10:{ 'data'			:lDate},
-        11:{ 'complement'	:lText},
-        12:{ 'created_us'	:lText},
-        13:{ 'created_da'	:lDate},
-        14:{ 'last_edite'	:lDate},
-        15:{ 'last_edi_1'	:lDate},
-        16:{ 'Shape_Leng'	:lDouble},
-        17:{ 'Shape_Area'	:lDouble},
+    operacoes_da_tabela_de_atributos = {
+        0 :{'OBJECTID'      : lLong},
+        1 :{ 'id'			: lLong},
+        2 :{ 'interessad'	: lText},
+        3 :{ 'imovel'		: lText},
+        4 :{ 'ano'			: lLong},
+        5 :{ 'processo'		: lLong},
+        6 :{ 'municipio'	: lText},
+        7 :{ 'parcela'		: lText},
+        8 :{ 'situacao'		: lText},
+        9 :{ 'georref'		: lText},
+        10:{ 'data'			: lDate},
+        11:{ 'complement'	: lText},
+        12:{ 'created_us'	: lText},
+        13:{ 'created_da'	: lDate},
+        14:{ 'last_edite'	: lDate},
+        15:{ 'last_edi_1'	: lDate},
+        16:{ 'Shape_Leng'	: lDouble},
+        17:{ 'Shape_Area'	: lDouble},
         }
 
-    unicodes_lowercase = ['\xc3\xa1',
+    unicodes_lowercase = [
+        '\xc3\xa1',
         '\xc3\xa9','\xc3\xad',
         '\xc3\xb3','\xc3\xba',
         '\xc3\xa3','\xc3\xb5',
@@ -303,7 +247,8 @@ class Constantes:
         '\xc3\xbb','\xc3\xa7',
         ]
 
-    unicodes_upercase = ['\xc3\x81',
+    unicodes_upercase = [
+        '\xc3\x81',
         '\xc3\x89','\xc3\x8d',
         '\xc3\x93','\xc3\x9a',
         '\xc3\x83','\xc3\x95',
@@ -586,9 +531,7 @@ def area_limitacao(camada_a_ser_bufada, data_frame_to_add, arquivo_mxd, distanci
 
 # Dados Gerais
 class Model:
-    rotulos = ["Ano","Número","Situaççao","Interessado",
-        "Denominação","Município","Carta","Zoneamento",
-        ]
+
 
     # Importante para configurar corretamente o Icone.
     myappid = 'Ocorrencias Maker {}-{}.{}'.format(__version__, __stage__, __subversion__)
@@ -597,8 +540,15 @@ class Model:
 
     # User Related
     nome_diretorio = os.path.dirname(__file__).replace('/','\\')
-    nome_usuario =getpass.getuser()
+    nome_usuario = getpass.getuser()
     caminho_projeto_mxd_legenda = ''
+    pasta_automap = 
+
+    # Data related
+    rotulos = [
+        "Ano", "Número", "Situação", "Interessado",
+        "Denominação", "Município", "Carta", "Zoneamento",
+        ]
 
     # Tela
     largura = 1270
@@ -1937,8 +1887,7 @@ class Control:
 
         # mensagem
         messagebox.messagebox.showinfo("Concluido", "Salvamento Concluído!")
-        # open window on the current file
-        subprocess.Popen('explorer /select, "{0}"'.format(novo_mxd.replace('/','\\').replace('c:\\','C:\\'),))
+        subprocess.Popen('explorer /select, "{0}"'.format(novo_mxd.replace('/','\\').replace('c:\\','C:\\'),)) # open window on the current file
 
 
 
@@ -1950,19 +1899,5 @@ if __name__ == "__main__":
 
 
 
-# Para Ativar ou desativar a vizualização
 
-# informacoes_cartograficas
-	
-# 	CARTA_INDICE_IBGE_DSG
-# 	ZEE_2010
-# 	FUSOS
-
-
-# jurisdicao
-	
-# 	GLEBAS_ESTADUAIS
-# 	ASSENTAMENTOS_ESTADUAIS
-# 	GLEBAS_FEDERAIS
-# 	ASSENTAMENTOS_FEDERAIS
 
