@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # INÍCIO
-__author__ = "Djalma Filho"
+__author__ = "Maria Leão"
 __stage__ = 'BETA'
 __version__ = '6.14'
 __subversion__ = '16.53'
