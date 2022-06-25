@@ -542,7 +542,7 @@ class Model:
     nome_diretorio = os.path.dirname(__file__).replace('/','\\')
     nome_usuario = getpass.getuser()
     caminho_projeto_mxd_legenda = ''
-    pasta_automap = 
+    pasta_automap = ''
 
     # Data related
     rotulos = [
